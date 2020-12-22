@@ -37,70 +37,77 @@ public class Analyzer {
         Set<Class<?>> classes = getAllClasses();
         List<ClassMetrics> classMetrics = getAllMetricsForClasses(classes);
 
-        double methodInheritanceFactor = calculateMethodInheritanceFactor(classMetrics);
-        double methodHidingFactor = calculateMethodHidingFactor(classMetrics);
-        double attributeHidingFactor = calculateAttributeHidingFactor(classMetrics);
-        double attributeInheritanceFactor = calculateAttributeInheritanceFactor(classMetrics);
-        double polymorphismObjectFactor = calculatePolymorphismObjectFactor(classMetrics);
-
-        return Result.builder()
+        Result result = Result.builder()
                 .classMetrics(classMetrics)
-                .methodInheritanceFactor(methodInheritanceFactor)
-                .methodHidingFactor(methodHidingFactor)
-                .attributeHidingFactor(attributeHidingFactor)
-                .attributeInheritanceFactor(attributeInheritanceFactor)
-                .polymorphismObjectFactor(polymorphismObjectFactor)
                 .build();
+
+        calculateMethodInheritanceFactor(classMetrics, result);
+        calculateMethodHidingFactor(classMetrics, result);
+        calculateAttributeHidingFactor(classMetrics, result);
+        calculateAttributeInheritanceFactor(classMetrics, result);
+        calculatePolymorphismObjectFactor(classMetrics, result);
+
+        return result;
     }
 
-    private double calculateMethodInheritanceFactor(List<ClassMetrics> classMetrics) {
+    private void calculateMethodInheritanceFactor(List<ClassMetrics> classMetrics, Result result) {
         double sumOfInheritedAndNonOverrideMethods = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfInheritedAndNonOverrideMethods)
                 .sum();
         double sumOfAccessibleMethods = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfAccessibleMethods)
                 .sum();
-        return sumOfInheritedAndNonOverrideMethods / sumOfAccessibleMethods;
+        result.setSumOfInheritedAndNonOverrideMethods(sumOfInheritedAndNonOverrideMethods);
+        result.setSumOfAccessibleMethods(sumOfAccessibleMethods);
+        result.setMethodInheritanceFactor(sumOfInheritedAndNonOverrideMethods / sumOfAccessibleMethods);
     }
 
-    private double calculateMethodHidingFactor(List<ClassMetrics> classMetrics) {
+    private void calculateMethodHidingFactor(List<ClassMetrics> classMetrics, Result result) {
         double sumOfPrivateMethods = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfPrivateMethods)
                 .sum();
         double sumOfOpenMethods = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfOpenMethods)
                 .sum();
-        return sumOfPrivateMethods / (sumOfPrivateMethods + sumOfOpenMethods);
+        result.setSumOfPrivateMethods(sumOfPrivateMethods);
+        result.setSumOfOpenMethods(sumOfOpenMethods);
+        result.setMethodHidingFactor(sumOfPrivateMethods / (sumOfPrivateMethods + sumOfOpenMethods));
     }
 
-    private double calculateAttributeHidingFactor(List<ClassMetrics> classMetrics) {
-        double sumOfPrivateFields = classMetrics.stream()
+    private void calculateAttributeHidingFactor(List<ClassMetrics> classMetrics, Result result) {
+        double numOfPrivateFields = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfPrivateFields)
                 .sum();
-        double sumOfOpenFields = classMetrics.stream()
+        double numOfFields = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfFields)
                 .sum();
-        return sumOfPrivateFields / sumOfOpenFields;
+        result.setSumOfPrivateFields(numOfPrivateFields);
+        result.setSumOfFields(numOfFields);
+        result.setAttributeHidingFactor(numOfPrivateFields / numOfFields);
     }
 
-    private double calculateAttributeInheritanceFactor(List<ClassMetrics> classMetrics) {
+    private void calculateAttributeInheritanceFactor(List<ClassMetrics> classMetrics, Result result) {
         double sumOfInheritedAndNonOverrideFields = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfInheritedAndNonOverrideFields)
                 .sum();
         double sumOfAccessibleFields = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfAccessibleFields)
                 .sum();
-        return sumOfInheritedAndNonOverrideFields / sumOfAccessibleFields;
+        result.setSumOfInheritedAndNonOverrideFields(sumOfInheritedAndNonOverrideFields);
+        result.setSumOfAccessibleFields(sumOfAccessibleFields);
+        result.setAttributeInheritanceFactor(sumOfInheritedAndNonOverrideFields / sumOfAccessibleFields);
     }
 
-    private double calculatePolymorphismObjectFactor(List<ClassMetrics> classMetrics) {
+    private void calculatePolymorphismObjectFactor(List<ClassMetrics> classMetrics, Result result) {
         double sumOfInheritedAndOverrideMethods = classMetrics.stream()
                 .mapToDouble(ClassMetrics::getNumOfInheritedAndOverrideMethods)
                 .sum();
         double newMethodsCoefficient = classMetrics.stream()
                 .mapToDouble(cm -> cm.getNumOfNewMethods() * cm.getNumOfChildren())
                 .sum();
-        return sumOfInheritedAndOverrideMethods / newMethodsCoefficient;
+        result.setSumOfInheritedAndOverrideMethods(sumOfInheritedAndOverrideMethods);
+        result.setNewMethodsCoefficient(newMethodsCoefficient);
+        result.setPolymorphismObjectFactor(sumOfInheritedAndOverrideMethods / newMethodsCoefficient);
     }
 
     private List<ClassMetrics> getAllMetricsForClasses(Collection<Class<?>> classes) {

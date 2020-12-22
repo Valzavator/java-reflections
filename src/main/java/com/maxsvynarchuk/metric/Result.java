@@ -2,18 +2,35 @@ package com.maxsvynarchuk.metric;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Builder
 @Getter
+@Setter
 public class Result {
-    private final List<ClassMetrics> classMetrics;
-    private final double methodInheritanceFactor;
-    private final double methodHidingFactor;
-    private final double attributeHidingFactor;
-    private final double attributeInheritanceFactor;
-    private final double polymorphismObjectFactor;
+    private List<ClassMetrics> classMetrics;
+
+    private double sumOfInheritedAndNonOverrideMethods;
+    private double sumOfAccessibleMethods;
+    private double methodInheritanceFactor;
+
+    private double sumOfPrivateMethods;
+    private double sumOfOpenMethods;
+    private double methodHidingFactor;
+
+    private double sumOfPrivateFields;
+    private double sumOfFields;
+    private double attributeHidingFactor;
+
+    private double sumOfInheritedAndNonOverrideFields;
+    private double sumOfAccessibleFields;
+    private double attributeInheritanceFactor;
+
+    private double sumOfInheritedAndOverrideMethods;
+    private double newMethodsCoefficient;
+    private double polymorphismObjectFactor;
 
     public void printAll() {
         printDepthOfInheritanceTree();
@@ -43,28 +60,63 @@ public class Result {
     }
 
     public void printMethodInheritanceFactor() {
-        String res = Double.isNaN(methodInheritanceFactor)
-                ? "No accessible methods"
-                : String.valueOf(methodInheritanceFactor);
-        System.out.println(">>> Method Inheritance Factor: " + res);
+        System.out.print(">>> Method Inheritance Factor: ");
+        if (Double.isNaN(methodInheritanceFactor)) {
+            System.out.println("No accessible methods");
+        } else {
+            System.out.printf("%f (%.0f / %.0f)\n",
+                    methodInheritanceFactor,
+                    sumOfInheritedAndNonOverrideMethods,
+                    sumOfAccessibleMethods);
+        }
     }
 
     public void printMethodHidingFactor() {
-        System.out.println(">>> Method Hiding Factor: " + methodHidingFactor);
+        System.out.print(">>> Method Hiding Factor: ");
+        if (Double.isNaN(methodHidingFactor)) {
+            System.out.println("No accessible methods");
+        } else {
+            System.out.printf("%f (%.0f / [%.0f + %.0f])\n",
+                    methodHidingFactor,
+                    sumOfPrivateMethods,
+                    sumOfPrivateMethods,
+                    sumOfOpenMethods);
+        }
     }
 
     public void printAttributeHidingFactor() {
-        System.out.println(">>> Attribute Hiding Factor: " + attributeHidingFactor);
+        System.out.print(">>> Attribute Hiding Factor: ");
+        if (Double.isNaN(attributeHidingFactor)) {
+            System.out.println("No accessible fields");
+        } else {
+            System.out.printf("%f (%.0f / %.0f)\n",
+                    attributeHidingFactor,
+                    sumOfPrivateFields,
+                    sumOfFields);
+        }
     }
 
     public void printAttributeInheritanceFactor() {
-        String res = Double.isNaN(attributeInheritanceFactor)
-                ? "No accessible fields"
-                : String.valueOf(attributeInheritanceFactor);
-        System.out.println(">>> Attribute Inheritance Factor: " + res);
+        System.out.print(">>> Attribute Inheritance Factor: ");
+        if (Double.isNaN(attributeInheritanceFactor)) {
+            System.out.println("No accessible fields");
+        } else {
+            System.out.printf("%f (%.0f / %.0f)\n",
+                    attributeInheritanceFactor,
+                    sumOfInheritedAndNonOverrideFields,
+                    sumOfAccessibleFields);
+        }
     }
 
     public void printPolymorphismObjectFactor() {
-        System.out.println(">>> Polymorphism Object Factor: " + polymorphismObjectFactor);
+        System.out.print(">>> Polymorphism Object Factor: ");
+        if (Double.isNaN(polymorphismObjectFactor)) {
+            System.out.println("No accessible methods");
+        } else {
+            System.out.printf("%f (%.0f / %.0f)\n",
+                    polymorphismObjectFactor,
+                    sumOfInheritedAndOverrideMethods,
+                    newMethodsCoefficient);
+        }
     }
 }
