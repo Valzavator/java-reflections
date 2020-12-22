@@ -1,4 +1,4 @@
-package com.maxsvynarchuk.test.methods;
+package com.maxsvynarchuk.metric.test.methods;
 
 public class TypeB extends TypeA {
 

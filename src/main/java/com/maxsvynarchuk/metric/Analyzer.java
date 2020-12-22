@@ -27,6 +27,9 @@ public class Analyzer {
     }
 
     private void initReflections() {
+        if (ClasspathHelper.forPackage(packagePath).size() == 0) {
+            throw new IllegalArgumentException("Invalid package path");
+        }
         reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage(packagePath))
                 .setScanners(new SubTypesScanner(false))
@@ -153,10 +156,8 @@ public class Analyzer {
         Class<?> clazz = classMetrics.getClazz();
 
         Set<Field> accessibleFields = getAccessibleFields(clazz);
-        Set<Field> declaredFields = getDeclaredForInheritanceFields(clazz);
-
         Set<Field> inheritedAndNonOverrideFields = accessibleFields.stream()
-                .filter(accessibleField -> declaredFields.stream()
+                .filter(accessibleField -> getDeclaredForInheritanceFields(clazz).stream()
                         .noneMatch(declaredField -> equalFields(accessibleField, declaredField)))
                 .collect(Collectors.toUnmodifiableSet());
 
@@ -193,9 +194,15 @@ public class Analyzer {
         classNames.forEach(className -> {
             try {
                 classes.add(Class.forName(className));
-            } catch (ClassNotFoundException e) {
+            } catch (Exception | Error e) {
                 System.err.println("Cannot load class:" + className);
+                throw new IllegalArgumentException(e);
             }
+//            catch (NoClassDefFoundError e) {
+//                System.err.println("Class " + className + " not found at runtime");
+//            } catch (Exception | Error e) {
+//                System.err.println("Class " + className + " cannot be loaded: " + e.getMessage());
+//            }
         });
         return classes;
     }

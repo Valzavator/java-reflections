@@ -1,4 +1,4 @@
-package com.maxsvynarchuk.test.fields;
+package com.maxsvynarchuk.metric.test.fields;
 
 public class TypeB extends TypeA {
     int a;
