@@ -2,6 +2,9 @@ package com.maxsvynarchuk.test.fields;
 
 public abstract class TypeRoot {
     int a;
-    int b;
+
+    static int b;
+
     private int c;
+    private static int d;
 }

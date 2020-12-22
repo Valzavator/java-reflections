@@ -80,7 +80,7 @@ public class ReflectionHelper {
         return accessibleFields;
     }
 
-    public static Set<Field> getDeclaredFields(Class<?> clazz) {
+    public static Set<Field> getDeclaredForInheritanceFields(Class<?> clazz) {
         return ReflectionUtils.getFields(clazz, getFieldModifiersPredicate());
     }
 
@@ -102,7 +102,7 @@ public class ReflectionHelper {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static Set<Field> getAllFields(Class<?> clazz) {
+    public static Set<Field> getAllDeclaredFields(Class<?> clazz) {
         return Modifier.isInterface(clazz.getModifiers())
                 ? Collections.emptySet()
                 : Arrays.stream(clazz.getDeclaredFields())

@@ -2,10 +2,10 @@ package com.maxsvynarchuk.test.methods;
 
 public abstract class TypeRoot implements Interface2 {
 
-    abstract void abstractClassMethod();
-
     void classMethod() {
     }
+
+    abstract void abstractClassMethod();
 
     static void staticMethod() {
     }

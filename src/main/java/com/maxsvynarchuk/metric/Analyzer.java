@@ -130,10 +130,8 @@ public class Analyzer {
         Class<?> clazz = classMetrics.getClazz();
 
         Set<Method> accessibleMethods = getAccessibleMethods(clazz);
-        Set<Method> declaredMethods = getDeclaredMethods(clazz);
-
         Set<Method> inheritedAndNonOverrideMethods = accessibleMethods.stream()
-                .filter(accessibleMethod -> declaredMethods.stream()
+                .filter(accessibleMethod -> getDeclaredMethods(clazz).stream()
                         .noneMatch(declaredMethod -> equalMethods(accessibleMethod, declaredMethod)))
                 .collect(Collectors.toUnmodifiableSet());
 
@@ -155,7 +153,7 @@ public class Analyzer {
         Class<?> clazz = classMetrics.getClazz();
 
         Set<Field> accessibleFields = getAccessibleFields(clazz);
-        Set<Field> declaredFields = getDeclaredFields(clazz);
+        Set<Field> declaredFields = getDeclaredForInheritanceFields(clazz);
 
         Set<Field> inheritedAndNonOverrideFields = accessibleFields.stream()
                 .filter(accessibleField -> declaredFields.stream()
@@ -170,7 +168,7 @@ public class Analyzer {
         Class<?> clazz = classMetrics.getClazz();
 
         Set<Field> privateFields = getPrivateFields(clazz);
-        Set<Field> allDeclaredFields = getAllFields(clazz);
+        Set<Field> allDeclaredFields = getAllDeclaredFields(clazz);
 
         classMetrics.setNumOfPrivateFields(privateFields.size());
         classMetrics.setNumOfFields(allDeclaredFields.size());
@@ -180,9 +178,7 @@ public class Analyzer {
         Class<?> clazz = classMetrics.getClazz();
 
         Set<Method> inheritedAndOverriddenMethods = getInheritedAndOverriddenMethods(clazz);
-        Set<Method> declaredMethods = getDeclaredMethods(clazz);
-
-        Set<Method> newMethods = declaredMethods.stream()
+        Set<Method> newMethods = getDeclaredMethods(clazz).stream()
                 .filter(m1 -> inheritedAndOverriddenMethods.stream()
                         .noneMatch(m2 -> equalMethods(m1, m2)))
                 .collect(Collectors.toUnmodifiableSet());
