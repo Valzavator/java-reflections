@@ -6,9 +6,9 @@ import lombok.Setter;
 @Setter
 public class Runner {
 
-    public static final String PACKAGE = "com.maxsvynarchuk.test.inheretence";
+//    public static final String PACKAGE = "com.maxsvynarchuk.test.inheretence";
 //    public static final String PACKAGE = "com.maxsvynarchuk.test.methods";
-//    public static final String PACKAGE = "com.maxsvynarchuk.test.fields";
+    public static final String PACKAGE = "com.maxsvynarchuk.test.fields";
 
     public static void main(String[] args) {
         try {
